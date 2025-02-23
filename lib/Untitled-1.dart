@@ -42,7 +42,8 @@ class WelcomePage extends StatelessWidget {
   final VoidCallback onThemeToggle;
   final bool isDarkMode;
 
-  const WelcomePage({super.key, required this.onThemeToggle, required this.isDarkMode});
+  const WelcomePage(
+      {super.key, required this.onThemeToggle, required this.isDarkMode});
 
   @override
   Widget build(BuildContext context) {
@@ -94,10 +95,12 @@ class AnimatedElectricityIcon extends StatefulWidget {
   const AnimatedElectricityIcon({super.key});
 
   @override
-  _AnimatedElectricityIconState createState() => _AnimatedElectricityIconState();
+  _AnimatedElectricityIconState createState() =>
+      _AnimatedElectricityIconState();
 }
 
-class _AnimatedElectricityIconState extends State<AnimatedElectricityIcon> with SingleTickerProviderStateMixin {
+class _AnimatedElectricityIconState extends State<AnimatedElectricityIcon>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
@@ -129,12 +132,12 @@ class _AnimatedElectricityIconState extends State<AnimatedElectricityIcon> with 
   }
 }
 
-
 class MainNavigationPage extends StatefulWidget {
   final VoidCallback onThemeToggle;
   final bool isDarkMode;
 
-  const MainNavigationPage({super.key, required this.onThemeToggle, required this.isDarkMode});
+  const MainNavigationPage(
+      {super.key, required this.onThemeToggle, required this.isDarkMode});
 
   @override
   _MainNavigationPageState createState() => _MainNavigationPageState();
@@ -274,7 +277,8 @@ class LoginForm extends StatelessWidget {
   final VoidCallback onLogin;
   final VoidCallback onGuestMode;
 
-  const LoginForm({super.key, required this.onLogin, required this.onGuestMode});
+  const LoginForm(
+      {super.key, required this.onLogin, required this.onGuestMode});
 
   @override
   Widget build(BuildContext context) {
@@ -365,9 +369,12 @@ class GuestModePage extends StatelessWidget {
     {'name': 'Fan', 'icon': Icons.toys},
     {'name': 'Heater', 'icon': Icons.whatshot},
     {'name': 'Light Bulb', 'icon': Icons.lightbulb},
+    {'name': 'Vacuum Cleaner', 'icon': Icons.cleaning_services},
+    {'name': 'Coffee Maker', 'icon': Icons.coffee},
+    {'name': 'Toaster', 'icon': Icons.bakery_dining},
+    {'name': 'Iron', 'icon': Icons.iron},
+    {'name': 'Water Heater', 'icon': Icons.water},
   ];
-
-  GuestModePage({super.key});
 
   void _showQuantityPopup(BuildContext context, String applianceName) {
     int quantity = 0;
@@ -420,8 +427,8 @@ class GuestModePage extends StatelessWidget {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                          content: Text(
-                              'You selected $quantity of $applianceName')),
+                          content:
+                              Text('You selected $quantity of $applianceName')),
                     );
                   },
                   child: Text('OK', style: TextStyle(color: Colors.tealAccent)),
@@ -442,12 +449,15 @@ class GuestModePage extends StatelessWidget {
         backgroundColor: Colors.black,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(4.0),
         child: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
+            crossAxisCount:
+                4, // Further reduced grid size for smaller grids on mobile
+            crossAxisSpacing: 4,
+            mainAxisSpacing: 4,
+            childAspectRatio:
+                1.5, // Adjusted aspect ratio for a better mobile fit
           ),
           itemCount: appliances.length,
           itemBuilder: (context, index) {
@@ -461,12 +471,15 @@ class GuestModePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(appliances[index]['icon'],
-                        size: 50, color: Colors.tealAccent),
-                    SizedBox(height: 10),
+                        size: 24,
+                        color: Colors.tealAccent), // Adjusted icon size
+                    SizedBox(height: 4),
                     Text(
                       appliances[index]['name'],
                       style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10), // Adjusted text size
                     ),
                   ],
                 ),
@@ -510,11 +523,27 @@ class UserProfile extends StatelessWidget {
   }
 }
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   final Function(bool) onThemeToggle;
   final bool isDarkMode;
 
-  const SettingsScreen({super.key, required this.onThemeToggle, required this.isDarkMode});
+  const SettingsScreen(
+      {super.key, required this.onThemeToggle, required this.isDarkMode});
+
+  @override
+  _SettingsScreenState createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  bool isDarkModeState;
+
+  _SettingsScreenState() : isDarkModeState = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isDarkModeState = widget.isDarkMode;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -528,8 +557,45 @@ class SettingsScreen extends StatelessWidget {
         children: [
           SwitchListTile(
             title: Text('Dark Mode'),
-            value: isDarkMode,
-            onChanged: onThemeToggle,
+            value: isDarkModeState,
+            onChanged: (value) {
+              setState(() {
+                isDarkModeState = value;
+              });
+              widget.onThemeToggle(value);
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.language, color: Colors.tealAccent),
+            title: Text('Language'),
+            subtitle: Text('Select app language'),
+            onTap: () {
+              // Add language selection logic
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.notifications, color: Colors.tealAccent),
+            title: Text('Notifications'),
+            subtitle: Text('Manage app notifications'),
+            onTap: () {
+              // Add notification settings logic
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.privacy_tip, color: Colors.tealAccent),
+            title: Text('Privacy Policy'),
+            subtitle: Text('View our privacy policy'),
+            onTap: () {
+              // Navigate to privacy policy page
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.help, color: Colors.tealAccent),
+            title: Text('Help & Support'),
+            subtitle: Text('Get help or contact support'),
+            onTap: () {
+              // Navigate to help & support page
+            },
           ),
         ],
       ),
@@ -553,7 +619,10 @@ class AboutScreen extends StatelessWidget {
           children: [
             Text(
               'About Electric Bill Optimizer',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.tealAccent),
+              style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.tealAccent),
             ),
             SizedBox(height: 10),
             Text(
@@ -563,7 +632,10 @@ class AboutScreen extends StatelessWidget {
             SizedBox(height: 20),
             Text(
               'Features:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.tealAccent),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.tealAccent),
             ),
             Text(
               '- Electricity usage tracking\n'
@@ -576,7 +648,10 @@ class AboutScreen extends StatelessWidget {
             SizedBox(height: 20),
             Text(
               'Developers:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.tealAccent),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.tealAccent),
             ),
             Text(
               '1. Moeen Ahmed Butt\n'
@@ -589,7 +664,10 @@ class AboutScreen extends StatelessWidget {
             SizedBox(height: 20),
             Text(
               'Contact Us:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.tealAccent),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.tealAccent),
             ),
             Text(
               'Phone: 03149104427\nEmail: f2021266469@umt.edu.pk',
@@ -673,14 +751,17 @@ class _AddBillScreenState extends State<AddBillScreen> {
     });
 
     try {
-      final File image = File(imageFile.path);
-      final GoogleVisionImage visionImage = GoogleVisionImage.fromFile(image);
-      final TextRecognizer textRecognizer = GoogleVision.instance.textRecognizer();
-
-      final VisionText visionText = await textRecognizer.processImage(visionImage);
+      final GoogleVisionImage visionImage =
+          GoogleVisionImage.fromFile(File(imageFile.path));
+      final TextRecognizer textRecognizer =
+          GoogleVision.instance.textRecognizer();
+      final VisionText visionText =
+          await textRecognizer.processImage(visionImage);
 
       setState(() {
-        extractedText = visionText.text ?? "No text found in the image.";
+        extractedText = (visionText.text!.isNotEmpty
+            ? visionText.text
+            : "No text found in the image.")!;
       });
 
       textRecognizer.close();
@@ -735,7 +816,8 @@ class _AddBillScreenState extends State<AddBillScreen> {
                   children: [
                     Text(
                       "Extracted Text:",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),

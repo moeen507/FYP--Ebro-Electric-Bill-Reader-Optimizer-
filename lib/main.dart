@@ -2,10 +2,10 @@
 
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/rendering.dart';
 import 'package:google_ml_vision/google_ml_vision.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
 
 void main() {
   runApp(ElectricBillApp());
@@ -129,6 +129,7 @@ class _AnimatedElectricityIconState extends State<AnimatedElectricityIcon> with 
   }
 }
 
+
 class MainNavigationPage extends StatefulWidget {
   final VoidCallback onThemeToggle;
   final bool isDarkMode;
@@ -137,6 +138,12 @@ class MainNavigationPage extends StatefulWidget {
 
   @override
   _MainNavigationPageState createState() => _MainNavigationPageState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<bool>('isDarkMode', isDarkMode));
+  }
 }
 
 class _MainNavigationPageState extends State<MainNavigationPage> {
@@ -144,12 +151,15 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Initialize the screens list inside the build method
     final List<Widget> screens = [
       HomeScreen(),
       ProfileScreen(),
       SettingsScreen(
-        onThemeToggle: widget.onThemeToggle,
-        isDarkMode: widget.isDarkMode,
+        onThemeToggle: (isDark) {
+          widget.onThemeToggle(); // Access widget here
+        },
+        isDarkMode: widget.isDarkMode, // Access widget here
       ),
       AboutScreen(),
       AddBillScreen(),
@@ -166,7 +176,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         },
         selectedItemColor: Colors.tealAccent,
         unselectedItemColor: Colors.grey,
-        items: [
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
@@ -345,6 +355,7 @@ class LoginForm extends StatelessWidget {
   }
 }
 
+
 class GuestModePage extends StatelessWidget {
   final List<Map<String, dynamic>> appliances = [
     {'name': 'Refrigerator', 'icon': Icons.kitchen},
@@ -355,9 +366,12 @@ class GuestModePage extends StatelessWidget {
     {'name': 'Fan', 'icon': Icons.toys},
     {'name': 'Heater', 'icon': Icons.whatshot},
     {'name': 'Light Bulb', 'icon': Icons.lightbulb},
+    {'name': 'Vacuum Cleaner', 'icon': Icons.cleaning_services},
+    {'name': 'Coffee Maker', 'icon': Icons.coffee},
+    {'name': 'Toaster', 'icon': Icons.bakery_dining},
+    {'name': 'Iron', 'icon': Icons.iron},
+    {'name': 'Water Heater', 'icon': Icons.water},
   ];
-
-  GuestModePage({super.key});
 
   void _showQuantityPopup(BuildContext context, String applianceName) {
     int quantity = 0;
@@ -432,12 +446,13 @@ class GuestModePage extends StatelessWidget {
         backgroundColor: Colors.black,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(4.0),
         child: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
+            crossAxisCount: 4, // Further reduced grid size for smaller grids on mobile
+            crossAxisSpacing: 4,
+            mainAxisSpacing: 4,
+            childAspectRatio: 1.5, // Adjusted aspect ratio for a better mobile fit
           ),
           itemCount: appliances.length,
           itemBuilder: (context, index) {
@@ -451,12 +466,12 @@ class GuestModePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(appliances[index]['icon'],
-                        size: 50, color: Colors.tealAccent),
-                    SizedBox(height: 10),
+                        size: 24, color: Colors.tealAccent), // Adjusted icon size
+                    SizedBox(height: 4),
                     Text(
                       appliances[index]['name'],
                       style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                          color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10), // Adjusted text size
                     ),
                   ],
                 ),
@@ -468,6 +483,7 @@ class GuestModePage extends StatelessWidget {
     );
   }
 }
+
 
 class UserProfile extends StatelessWidget {
   final VoidCallback onLogout;
@@ -500,102 +516,80 @@ class UserProfile extends StatelessWidget {
   }
 }
 
-
-class SettingsScreen extends StatelessWidget {
-  final Function(bool) onThemeToggle; // Accepts a bool parameter
+class SettingsScreen extends StatefulWidget {
+  final Function(bool) onThemeToggle;
   final bool isDarkMode;
 
-  const SettingsScreen({
-    super.key,
-    required this.onThemeToggle,
-    required this.isDarkMode,
-  });
+  const SettingsScreen({super.key, required this.onThemeToggle, required this.isDarkMode});
+
+  @override
+  _SettingsScreenState createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  bool isDarkModeState;
+
+  _SettingsScreenState() : isDarkModeState = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isDarkModeState = widget.isDarkMode;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context); // ✅ Go back to previous screen
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            onPressed: () {
-              // Example: Show an About dialog
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text("About"),
-                  content: const Text("This is the settings screen."),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text("OK"),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
+        title: Text('Settings'),
+        backgroundColor: Colors.black,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          _buildThemeToggle(),
-          const Divider(),
-          _buildNotificationToggle(),
-          const Divider(),
-          _buildLanguageSelection(),
+          SwitchListTile(
+            title: Text('Dark Mode'),
+            value: isDarkModeState,
+            onChanged: (value) {
+              setState(() {
+                isDarkModeState = value;
+              });
+              widget.onThemeToggle(value);
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.language, color: Colors.tealAccent),
+            title: Text('Language'),
+            subtitle: Text('Select app language'),
+            onTap: () {
+              // Add language selection logic
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.notifications, color: Colors.tealAccent),
+            title: Text('Notifications'),
+            subtitle: Text('Manage app notifications'),
+            onTap: () {
+              // Add notification settings logic
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.privacy_tip, color: Colors.tealAccent),
+            title: Text('Privacy Policy'),
+            subtitle: Text('View our privacy policy'),
+            onTap: () {
+              // Navigate to privacy policy page
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.help, color: Colors.tealAccent),
+            title: Text('Help & Support'),
+            subtitle: Text('Get help or contact support'),
+            onTap: () {
+              // Navigate to help & support page
+            },
+          ),
         ],
-      ),
-    );
-  }
-
-  /// **🌑 Dark Mode Toggle**
-  Widget _buildThemeToggle() {
-    return SwitchListTile(
-      title: const Text('Dark Mode', style: TextStyle(fontSize: 18)),
-      secondary: const Icon(Icons.dark_mode),
-      value: isDarkMode,
-      onChanged: onThemeToggle, // ✅ Toggle theme directly
-    );
-  }
-
-  /// **🔔 Notifications Toggle**
-  Widget _buildNotificationToggle() {
-    return SwitchListTile(
-      title: const Text('Enable Notifications', style: TextStyle(fontSize: 18)),
-      secondary: const Icon(Icons.notifications_active),
-      value: true, // Static value for now
-      onChanged: (value) {
-        // Handle notification toggle
-      },
-    );
-  }
-
-  /// **🌍 Language Selection Dropdown**
-  Widget _buildLanguageSelection() {
-    return ListTile(
-      leading: const Icon(Icons.language),
-      title: const Text('Language', style: TextStyle(fontSize: 18)),
-      trailing: DropdownButton<String>(
-        value: 'English',
-        items: ['English', 'Spanish', 'French', 'German']
-            .map((lang) => DropdownMenuItem(
-                  value: lang,
-                  child: Text(lang),
-                ))
-            .toList(),
-        onChanged: (value) {
-          // Handle language change
-        },
       ),
     );
   }
@@ -667,7 +661,6 @@ class AboutScreen extends StatelessWidget {
   }
 }
 
-
 class AddBillScreen extends StatefulWidget {
   AddBillScreen({super.key});
 
@@ -678,7 +671,8 @@ class AddBillScreen extends StatefulWidget {
 class _AddBillScreenState extends State<AddBillScreen> {
   final ImagePicker _picker = ImagePicker();
   Uint8List? _imageData;
-  String extractedText = "No text detected yet.";  // Default text when no OCR is done
+  String extractedText = "No text detected yet.";
+  bool _isProcessing = false;
 
   Future<void> _showImagePicker(BuildContext context) async {
     showDialog(
@@ -693,34 +687,16 @@ class _AddBillScreenState extends State<AddBillScreen> {
                 leading: Icon(Icons.photo_library),
                 title: Text('Gallery Picker'),
                 onTap: () async {
-                  final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
                   Navigator.pop(context);
-                  if (pickedFile != null) {
-                    final imageBytes = await pickedFile.readAsBytes();
-                    setState(() {
-                      _imageData = imageBytes;
-                    });
-                    await _processImageForOCR(pickedFile);
-                  } else {
-                    print("No image selected from gallery");
-                  }
+                  await _pickImage(ImageSource.gallery);
                 },
               ),
               ListTile(
                 leading: Icon(Icons.camera_alt),
                 title: Text('Use Camera'),
                 onTap: () async {
-                  final pickedFile = await _picker.pickImage(source: ImageSource.camera);
                   Navigator.pop(context);
-                  if (pickedFile != null) {
-                    final imageBytes = await pickedFile.readAsBytes();
-                    setState(() {
-                      _imageData = imageBytes;
-                    });
-                    await _processImageForOCR(pickedFile);
-                  } else {
-                    print("No image captured from camera");
-                  }
+                  await _pickImage(ImageSource.camera);
                 },
               ),
             ],
@@ -730,30 +706,50 @@ class _AddBillScreenState extends State<AddBillScreen> {
     );
   }
 
-  Future<void> _processImageForOCR(XFile imageFile) async {
+  Future<void> _pickImage(ImageSource source) async {
     try {
-      final File image = File(imageFile.path);
-      final GoogleVisionImage visionImage = GoogleVisionImage.fromFile(image);
+      final pickedFile = await _picker.pickImage(source: source);
+      if (pickedFile != null) {
+        final imageBytes = await pickedFile.readAsBytes();
+        setState(() {
+          _imageData = imageBytes;
+        });
+        await _processImageForOCR(pickedFile);
+      } else {
+        print("No image selected");
+      }
+    } catch (e) {
+      print("Error picking image: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to pick image: $e")),
+      );
+    }
+  }
+
+  Future<void> _processImageForOCR(XFile imageFile) async {
+    setState(() {
+      _isProcessing = true;
+    });
+
+    try {
+      final GoogleVisionImage visionImage = GoogleVisionImage.fromFile(File(imageFile.path));
       final TextRecognizer textRecognizer = GoogleVision.instance.textRecognizer();
-      
       final VisionText visionText = await textRecognizer.processImage(visionImage);
 
-      if (visionText.text!.isEmpty) {
-        setState(() {
-          extractedText = "No text found in the image.";
-        });
-      } else {
-        setState(() {
-          extractedText = visionText.text!;
-        });
-      }
+      setState(() {
+        extractedText = (visionText.text!.isNotEmpty ? visionText.text : "No text found in the image.")!;
+      });
 
-      textRecognizer.close();  // Close the text recognizer to release resources
+      textRecognizer.close();
     } catch (e) {
       setState(() {
         extractedText = "Error processing image: $e";
       });
       print("Error during OCR process: $e");
+    } finally {
+      setState(() {
+        _isProcessing = false;
+      });
     }
   }
 
@@ -789,18 +785,25 @@ class _AddBillScreenState extends State<AddBillScreen> {
                 child: Text('Upload Bill Image'),
               ),
               SizedBox(height: 20),
-              Text(
-                "Extracted Text:",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  extractedText,
-                  style: TextStyle(fontSize: 16),
-                  textAlign: TextAlign.center,
+              if (_isProcessing)
+                CircularProgressIndicator()
+              else
+                Column(
+                  children: [
+                    Text(
+                      "Extracted Text:",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        extractedText,
+                        style: TextStyle(fontSize: 16),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
             ],
           ),
         ),
