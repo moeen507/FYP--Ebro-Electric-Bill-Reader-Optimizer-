@@ -655,7 +655,7 @@ class _AddBillScreenState extends State<AddBillScreen> {
         setState(() {
           _imageData = imageBytes;
         });
-        await _processImageForOCR(pickedFile);
+        await _processImageForOCR(pickedFile as File);
       } else {
         print("No image selected");
       }
@@ -667,7 +667,7 @@ class _AddBillScreenState extends State<AddBillScreen> {
     }
   }
 
-  Future<void> _processImageForOCR(XFile imageFile) async {
+  Future<void> _processImageForOCR(File imageFile) async {
     setState(() {
       _isProcessing = true;
     });

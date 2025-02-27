@@ -7,6 +7,8 @@ import 'package:google_ml_vision/google_ml_vision.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'Utils/void main() {.dart';
+
 void main() {
   runApp(ElectricBillApp());
 }
@@ -162,7 +164,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         onThemeToggle: (isDark) {
           widget.onThemeToggle(); // Access widget here
         },
-        isDarkMode: widget.isDarkMode, // Access widget here
+        isDarkMode: widget.isDarkMode, onLanguageChange: (String ) {  }, selectedLanguage: '', // Access widget here
       ),
       AboutScreen(),
       AddBillScreen(),
@@ -272,13 +274,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
           );
   }
 }
-
-class LoginForm extends StatelessWidget {
+class LoginForm extends StatefulWidget {
   final VoidCallback onLogin;
   final VoidCallback onGuestMode;
 
-  const LoginForm(
-      {super.key, required this.onLogin, required this.onGuestMode});
+  const LoginForm({super.key, required this.onLogin, required this.onGuestMode});
+
+  @override
+  _LoginFormState createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<LoginForm> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  String? loggedInUser;
+
+  void _handleLogin() {
+    String username = _usernameController.text.trim();
+    String password = _passwordController.text.trim();
+
+    if (username.isEmpty || password.isEmpty) {
+      _showErrorPopup("Kindly enter username and password to log in.");
+    } else {
+      setState(() {
+        loggedInUser = username;
+      });
+      widget.onLogin();
+    }
+  }
+
+  void _showErrorPopup(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Error", style: TextStyle(color: Colors.redAccent)),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("OK", style: TextStyle(color: Colors.tealAccent)),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -290,7 +333,7 @@ class LoginForm extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Welcome Back!',
+                loggedInUser != null ? "Welcome, $loggedInUser!" : "Welcome Back!",
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -299,6 +342,7 @@ class LoginForm extends StatelessWidget {
               ),
               SizedBox(height: 10),
               TextField(
+                controller: _usernameController,
                 decoration: InputDecoration(
                   labelText: 'Email or Username',
                   labelStyle: TextStyle(color: Colors.grey),
@@ -314,6 +358,7 @@ class LoginForm extends StatelessWidget {
               ),
               SizedBox(height: 20),
               TextField(
+                controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Password',
@@ -330,7 +375,7 @@ class LoginForm extends StatelessWidget {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: onLogin,
+                onPressed: _handleLogin,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.tealAccent,
                   shape: RoundedRectangleBorder(
@@ -345,7 +390,7 @@ class LoginForm extends StatelessWidget {
               ),
               SizedBox(height: 10),
               TextButton(
-                onPressed: onGuestMode,
+                onPressed: widget.onGuestMode,
                 child: Text(
                   'Continue as Guest',
                   style: TextStyle(color: Colors.tealAccent, fontSize: 16),
@@ -359,26 +404,153 @@ class LoginForm extends StatelessWidget {
   }
 }
 
-class GuestModePage extends StatelessWidget {
+
+
+class GuestModePage extends StatefulWidget {
+  @override
+  _GuestModePageState createState() => _GuestModePageState();
+}
+
+class _GuestModePageState extends State<GuestModePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Guest Mode'),
+        backgroundColor: Colors.black,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 5,
+            crossAxisSpacing: 5,
+            mainAxisSpacing: 5,
+          ),
+          itemCount: appliances.length,
+          itemBuilder: (context, index) {
+            return Card(
+              color: Colors.tealAccent.withOpacity(0.1),
+              child: InkWell(
+                onTap: () {
+                  _showApplianceTypePopup(context, appliances[index]['name'], appliances[index]['types']);
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(appliances[index]['icon'], size: 50, color: Colors.tealAccent),
+                    SizedBox(height: 10),
+                    Text(
+                      appliances[index]['name'],
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+  TextEditingController wattageController = TextEditingController();
+  FocusNode _focusNode = FocusNode();
+  List<Map<String, dynamic>> selectedAppliances = [];
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    wattageController.dispose();
+    super.dispose();
+  }
+
   final List<Map<String, dynamic>> appliances = [
-    {'name': 'Refrigerator', 'icon': Icons.kitchen},
-    {'name': 'Air Conditioner', 'icon': Icons.ac_unit},
-    {'name': 'Washing Machine', 'icon': Icons.local_laundry_service},
-    {'name': 'Television', 'icon': Icons.tv},
-    {'name': 'Oven', 'icon': Icons.microwave},
-    {'name': 'Fan', 'icon': Icons.toys},
-    {'name': 'Heater', 'icon': Icons.whatshot},
-    {'name': 'Light Bulb', 'icon': Icons.lightbulb},
-    {'name': 'Vacuum Cleaner', 'icon': Icons.cleaning_services},
-    {'name': 'Coffee Maker', 'icon': Icons.coffee},
-    {'name': 'Toaster', 'icon': Icons.bakery_dining},
-    {'name': 'Iron', 'icon': Icons.iron},
-    {'name': 'Water Heater', 'icon': Icons.water},
+    {'name': 'Light Bulb', 'icon': Icons.lightbulb, 'types': ['LED', 'CFL', 'Incandescent']},
+    {'name': 'Television', 'icon': Icons.tv, 'types': ['LED', 'LCD', 'OLED']},
+    {'name': 'Refrigerator', 'icon': Icons.kitchen, 'types': ['Single Door', 'Double Door', 'Side by Side']},
+    {'name': 'Air Conditioner', 'icon': Icons.ac_unit, 'types': ['Window', 'Split', 'Portable']},
+    {'name': 'Washing Machine', 'icon': Icons.local_laundry_service, 'types': ['Front Load', 'Top Load', 'Semi Automatic']},
+    {'name': 'Oven', 'icon': Icons.microwave, 'types': ['Microwave', 'Convection', 'Grill']},
+    {'name': 'Fan', 'icon': Icons.toys, 'types': ['Ceiling', 'Table', 'Wall']},
+    {'name': 'Heater', 'icon': Icons.whatshot, 'types': ['Electric', 'Gas']},
+    {'name': 'Vacuum Cleaner', 'icon': Icons.cleaning_services, 'types': ['Handheld', 'Canister', 'Robot']},
+    {'name': 'Coffee Maker', 'icon': Icons.coffee, 'types': ['Drip', 'Espresso', 'French Press']},
+    {'name': 'Toaster', 'icon': Icons.bakery_dining, 'types': ['2 Slice', '4 Slice', 'Oven Toaster']},
+    {'name': 'Iron', 'icon': Icons.iron, 'types': ['Steam', 'Dry', 'Cordless']},
+
   ];
 
-  void _showQuantityPopup(BuildContext context, String applianceName) {
-    int quantity = 0;
+  void _showApplianceTypePopup(BuildContext context, String applianceName, List<String> types) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.black,
+          title: Text('Select Type of $applianceName', style: TextStyle(color: Colors.tealAccent)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: types.map((type) {
+              return ListTile(
+                title: Text(type, style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showWattagePopup(context, applianceName, type);
+                },
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
 
+  void _showWattagePopup(BuildContext context, String applianceName, String type) {
+    wattageController.clear();
+    _focusNode.requestFocus();
+    
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.black,
+          title: Text('Enter Wattage for $applianceName ($type)', style: TextStyle(color: Colors.tealAccent)),
+          content: TextField(
+            controller: wattageController,
+            focusNode: _focusNode,
+            autofocus: true,
+            keyboardType: TextInputType.number,
+            style: TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: 'Enter watts',
+              hintStyle: TextStyle(color: Colors.grey),
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                _focusNode.unfocus();
+                Navigator.pop(context);
+              },
+              child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+            ),
+            TextButton(
+              onPressed: () {
+                _focusNode.unfocus();
+                String enteredWattage = wattageController.text;
+                Navigator.pop(context);
+                _showQuantityPopup(context, applianceName, type, enteredWattage);
+              },
+              child: Text('OK', style: TextStyle(color: Colors.tealAccent)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showQuantityPopup(BuildContext context, String applianceName, String type, String wattage) {
+    int quantity = 0;
     showDialog(
       context: context,
       builder: (context) {
@@ -386,10 +558,7 @@ class GuestModePage extends StatelessWidget {
           builder: (context, setState) {
             return AlertDialog(
               backgroundColor: Colors.black,
-              title: Text(
-                'Set Quantity',
-                style: TextStyle(color: Colors.tealAccent),
-              ),
+              title: Text('Set Quantity for $applianceName ($type - $wattage W)', style: TextStyle(color: Colors.tealAccent)),
               content: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -401,10 +570,7 @@ class GuestModePage extends StatelessWidget {
                       });
                     },
                   ),
-                  Text(
-                    '$quantity',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
+                  Text('$quantity', style: TextStyle(color: Colors.white, fontSize: 18)),
                   IconButton(
                     icon: Icon(Icons.add, color: Colors.tealAccent),
                     onPressed: () {
@@ -424,11 +590,19 @@ class GuestModePage extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
+                    setState(() {
+                      selectedAppliances.add({
+                        'name': applianceName,
+                        'type': type,
+                        'wattage': wattage,
+                        'quantity': quantity,
+                      });
+                    });
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                          content:
-                              Text('You selected $quantity of $applianceName')),
+                        content: Text('Added $quantity x $applianceName ($type) - $wattage W'),
+                      ),
                     );
                   },
                   child: Text('OK', style: TextStyle(color: Colors.tealAccent)),
@@ -440,95 +614,22 @@ class GuestModePage extends StatelessWidget {
       },
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Select Appliances'),
-        backgroundColor: Colors.black,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount:
-                4, // Further reduced grid size for smaller grids on mobile
-            crossAxisSpacing: 4,
-            mainAxisSpacing: 4,
-            childAspectRatio:
-                1.5, // Adjusted aspect ratio for a better mobile fit
-          ),
-          itemCount: appliances.length,
-          itemBuilder: (context, index) {
-            return Card(
-              color: Colors.tealAccent.withOpacity(0.1),
-              child: InkWell(
-                onTap: () {
-                  _showQuantityPopup(context, appliances[index]['name']);
-                },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(appliances[index]['icon'],
-                        size: 24,
-                        color: Colors.tealAccent), // Adjusted icon size
-                    SizedBox(height: 4),
-                    Text(
-                      appliances[index]['name'],
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 10), // Adjusted text size
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
 }
 
-class UserProfile extends StatelessWidget {
-  final VoidCallback onLogout;
-
-  const UserProfile({super.key, required this.onLogout});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 50,
-            backgroundImage: AssetImage('assets/profile.png'),
-          ),
-          SizedBox(height: 20),
-          Text(
-            'Welcome, User!',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: onLogout,
-            child: Text('Logout'),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class SettingsScreen extends StatefulWidget {
   final Function(bool) onThemeToggle;
   final bool isDarkMode;
+  final String selectedLanguage;
+  final Function(String) onLanguageChange;
 
-  const SettingsScreen(
-      {super.key, required this.onThemeToggle, required this.isDarkMode});
+  const SettingsScreen({
+    super.key,
+    required this.onThemeToggle,
+    required this.isDarkMode,
+    required this.selectedLanguage,
+    required this.onLanguageChange,
+  });
 
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
@@ -536,6 +637,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool isDarkModeState;
+  bool notificationsEnabled = true;
 
   _SettingsScreenState() : isDarkModeState = false;
 
@@ -545,18 +647,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
     isDarkModeState = widget.isDarkMode;
   }
 
+  void _selectLanguage(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select Language'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: Text('English'),
+                onTap: () {
+                  widget.onLanguageChange('English');
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Text('Urdu'),
+                onTap: () {
+                  widget.onLanguageChange('Urdu');
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Text('Arabic'),
+                onTap: () {
+                  widget.onLanguageChange('Arabic');
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    String lang = widget.selectedLanguage;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: Text(lang == 'Urdu' ? 'ترتیبات' : lang == 'Arabic' ? 'الإعدادات' : 'Settings'),
         backgroundColor: Colors.black,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           SwitchListTile(
-            title: Text('Dark Mode'),
+            title: Text(lang == 'Urdu' ? 'ڈارک موڈ' : lang == 'Arabic' ? 'الوضع الداكن' : 'Dark Mode'),
             value: isDarkModeState,
             onChanged: (value) {
               setState(() {
@@ -567,37 +707,57 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           ListTile(
             leading: Icon(Icons.language, color: Colors.tealAccent),
-            title: Text('Language'),
-            subtitle: Text('Select app language'),
+            title: Text(lang == 'Urdu' ? 'زبان' : lang == 'Arabic' ? 'اللغة' : 'Language'),
+            subtitle: Text(lang),
             onTap: () {
-              // Add language selection logic
+              _selectLanguage(context);
+            },
+          ),
+          SwitchListTile(
+            title: Text(lang == 'Urdu' ? 'اطلاعات' : lang == 'Arabic' ? 'الإشعارات' : 'Notifications'),
+            value: notificationsEnabled,
+            onChanged: (value) {
+              setState(() {
+                notificationsEnabled = value;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(value ? (lang == 'Urdu' ? 'اطلاعات فعال ہوگئی ہیں' : lang == 'Arabic' ? 'تم تفعيل الإشعارات' : 'Notifications are ON') : (lang == 'Urdu' ? 'اطلاعات بند ہوگئی ہیں' : lang == 'Arabic' ? 'تم إيقاف الإشعارات' : 'Notifications are OFF'))),
+              );
             },
           ),
           ListTile(
-            leading: Icon(Icons.notifications, color: Colors.tealAccent),
-            title: Text('Notifications'),
-            subtitle: Text('Manage app notifications'),
+            leading: Icon(Icons.description, color: Colors.tealAccent),
+            title: Text(lang == 'Urdu' ? 'شرائط و ضوابط' : lang == 'Arabic' ? 'الشروط والأحكام' : 'Terms & Conditions'),
+            subtitle: Text(lang == 'Urdu' ? 'ایپ کے قواعد پڑھیں' : lang == 'Arabic' ? 'اقرأ قواعد التطبيق' : 'Read our terms and conditions'),
             onTap: () {
-              // Add notification settings logic
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.privacy_tip, color: Colors.tealAccent),
-            title: Text('Privacy Policy'),
-            subtitle: Text('View our privacy policy'),
-            onTap: () {
-              // Navigate to privacy policy page
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.help, color: Colors.tealAccent),
-            title: Text('Help & Support'),
-            subtitle: Text('Get help or contact support'),
-            onTap: () {
-              // Navigate to help & support page
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => TermsConditionsScreen(lang: lang)),
+              );
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class TermsConditionsScreen extends StatelessWidget {
+  final String lang;
+  const TermsConditionsScreen({super.key, required this.lang});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(lang == 'Urdu' ? 'شرائط و ضوابط' : lang == 'Arabic' ? 'الشروط والأحكام' : 'Terms & Conditions')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text(
+          lang == 'Urdu' ? 'اس ایپ کو استعمال کرتے ہوئے، آپ ہماری شرائط و ضوابط سے اتفاق کرتے ہیں۔ بجلی کے استعمال کی مؤثر نگرانی کے لیے ذمہ داری سے ایپ کا استعمال یقینی بنائیں۔' :
+          lang == 'Arabic' ? 'باستخدام هذا التطبيق، فإنك توافق على شروطنا وأحكامنا. تأكد من الاستخدام المسؤول للتطبيق لمراقبة استهلاك الكهرباء بشكل فعال.' :
+          'By using this app, you agree to our terms and conditions. Ensure responsible usage of the application for monitoring electricity consumption effectively.',
+          style: TextStyle(fontSize: 16),
+        ),
       ),
     );
   }
@@ -733,7 +893,7 @@ class _AddBillScreenState extends State<AddBillScreen> {
         setState(() {
           _imageData = imageBytes;
         });
-        await _processImageForOCR(pickedFile);
+        await _processImageForOCR(pickedFile as File);
       } else {
         print("No image selected");
       }
@@ -745,7 +905,7 @@ class _AddBillScreenState extends State<AddBillScreen> {
     }
   }
 
-  Future<void> _processImageForOCR(XFile imageFile) async {
+  Future<void> _processImageForOCR(File imageFile) async {
     setState(() {
       _isProcessing = true;
     });
