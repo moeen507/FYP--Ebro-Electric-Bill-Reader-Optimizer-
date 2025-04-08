@@ -3,7 +3,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/rendering.dart';
-import 'package:google_ml_vision/google_ml_vision.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -911,20 +910,11 @@ class _AddBillScreenState extends State<AddBillScreen> {
     });
 
     try {
-      final GoogleVisionImage visionImage =
-          GoogleVisionImage.fromFile(File(imageFile.path));
-      final TextRecognizer textRecognizer =
-          GoogleVision.instance.textRecognizer();
-      final VisionText visionText =
-          await textRecognizer.processImage(visionImage);
 
       setState(() {
-        extractedText = (visionText.text!.isNotEmpty
-            ? visionText.text
-            : "No text found in the image.")!;
+
       });
 
-      textRecognizer.close();
     } catch (e) {
       setState(() {
         extractedText = "Error processing image: $e";

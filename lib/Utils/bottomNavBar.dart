@@ -1,9 +1,10 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Utils/homeScreen.dart';
-import 'package:flutter_application_1/Utils/profileScreen.dart';
-import 'package:flutter_application_1/Utils/settingScreen.dart';
+
+import 'homeScreen.dart';
+import 'profileScreen.dart';
+import 'settingScreen.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});

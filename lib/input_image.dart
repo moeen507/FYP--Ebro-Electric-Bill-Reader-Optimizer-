@@ -1,9 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:google_ml_vision/google_ml_vision.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
 
 void main() {
   runApp(ElectricBillApp());
@@ -40,7 +38,8 @@ class WelcomePage extends StatelessWidget {
   final VoidCallback onThemeToggle;
   final bool isDarkMode;
 
-  const WelcomePage({super.key, required this.onThemeToggle, required this.isDarkMode});
+  const WelcomePage(
+      {super.key, required this.onThemeToggle, required this.isDarkMode});
 
   @override
   Widget build(BuildContext context) {
@@ -92,10 +91,12 @@ class AnimatedElectricityIcon extends StatefulWidget {
   const AnimatedElectricityIcon({super.key});
 
   @override
-  _AnimatedElectricityIconState createState() => _AnimatedElectricityIconState();
+  _AnimatedElectricityIconState createState() =>
+      _AnimatedElectricityIconState();
 }
 
-class _AnimatedElectricityIconState extends State<AnimatedElectricityIcon> with SingleTickerProviderStateMixin {
+class _AnimatedElectricityIconState extends State<AnimatedElectricityIcon>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
@@ -131,7 +132,8 @@ class MainNavigationPage extends StatefulWidget {
   final VoidCallback onThemeToggle;
   final bool isDarkMode;
 
-  const MainNavigationPage({super.key, required this.onThemeToggle, required this.isDarkMode});
+  const MainNavigationPage(
+      {super.key, required this.onThemeToggle, required this.isDarkMode});
 
   @override
   _MainNavigationPageState createState() => _MainNavigationPageState();
@@ -262,7 +264,8 @@ class LoginForm extends StatelessWidget {
   final VoidCallback onLogin;
   final VoidCallback onGuestMode;
 
-  const LoginForm({super.key, required this.onLogin, required this.onGuestMode});
+  const LoginForm(
+      {super.key, required this.onLogin, required this.onGuestMode});
 
   @override
   Widget build(BuildContext context) {
@@ -408,8 +411,8 @@ class GuestModePage extends StatelessWidget {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                          content: Text(
-                              'You selected $quantity of $applianceName')),
+                          content:
+                              Text('You selected $quantity of $applianceName')),
                     );
                   },
                   child: Text('OK', style: TextStyle(color: Colors.tealAccent)),
@@ -502,7 +505,8 @@ class SettingsScreen extends StatelessWidget {
   final VoidCallback onThemeToggle;
   final bool isDarkMode;
 
-  const SettingsScreen({super.key, required this.onThemeToggle, required this.isDarkMode});
+  const SettingsScreen(
+      {super.key, required this.onThemeToggle, required this.isDarkMode});
 
   @override
   Widget build(BuildContext context) {
@@ -539,7 +543,10 @@ class AboutScreen extends StatelessWidget {
           children: [
             Text(
               'About Electric Bill Optimizer',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.tealAccent),
+              style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.tealAccent),
             ),
             SizedBox(height: 10),
             Text(
@@ -549,7 +556,10 @@ class AboutScreen extends StatelessWidget {
             SizedBox(height: 20),
             Text(
               'Features:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.tealAccent),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.tealAccent),
             ),
             Text(
               '- Electricity usage tracking\n'
@@ -562,7 +572,10 @@ class AboutScreen extends StatelessWidget {
             SizedBox(height: 20),
             Text(
               'Developers:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.tealAccent),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.tealAccent),
             ),
             Text(
               '1. Moeen Ahmed Butt\n'
@@ -575,7 +588,10 @@ class AboutScreen extends StatelessWidget {
             SizedBox(height: 20),
             Text(
               'Contact Us:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.tealAccent),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.tealAccent),
             ),
             Text(
               'Phone: 03149104427\nEmail: f2021266469@umt.edu.pk',
@@ -588,7 +604,6 @@ class AboutScreen extends StatelessWidget {
   }
 }
 
-
 class AddBillScreen extends StatefulWidget {
   AddBillScreen({super.key});
 
@@ -599,7 +614,8 @@ class AddBillScreen extends StatefulWidget {
 class _AddBillScreenState extends State<AddBillScreen> {
   final ImagePicker _picker = ImagePicker();
   Uint8List? _imageData;
-  String extractedText = "No text detected yet.";  // Default text when no OCR is done
+  String extractedText =
+      "No text detected yet."; // Default text when no OCR is done
 
   Future<void> _showImagePicker(BuildContext context) async {
     showDialog(
@@ -614,7 +630,8 @@ class _AddBillScreenState extends State<AddBillScreen> {
                 leading: Icon(Icons.photo_library),
                 title: Text('Gallery Picker'),
                 onTap: () async {
-                  final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+                  final pickedFile =
+                      await _picker.pickImage(source: ImageSource.gallery);
                   Navigator.pop(context);
                   if (pickedFile != null) {
                     final imageBytes = await pickedFile.readAsBytes();
@@ -631,7 +648,8 @@ class _AddBillScreenState extends State<AddBillScreen> {
                 leading: Icon(Icons.camera_alt),
                 title: Text('Use Camera'),
                 onTap: () async {
-                  final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+                  final pickedFile =
+                      await _picker.pickImage(source: ImageSource.camera);
                   Navigator.pop(context);
                   if (pickedFile != null) {
                     final imageBytes = await pickedFile.readAsBytes();
@@ -654,22 +672,6 @@ class _AddBillScreenState extends State<AddBillScreen> {
   Future<void> _processImageForOCR(XFile imageFile) async {
     try {
       final File image = File(imageFile.path);
-      final GoogleVisionImage visionImage = GoogleVisionImage.fromFile(image);
-      final TextRecognizer textRecognizer = GoogleVision.instance.textRecognizer();
-      
-      final VisionText visionText = await textRecognizer.processImage(visionImage);
-
-      if (visionText.text!.isEmpty) {
-        setState(() {
-          extractedText = "No text found in the image.";
-        });
-      } else {
-        setState(() {
-          extractedText = visionText.text!;
-        });
-      }
-
-      textRecognizer.close();  // Close the text recognizer to release resources
     } catch (e) {
       setState(() {
         extractedText = "Error processing image: $e";
@@ -725,7 +727,7 @@ class _AddBillScreenState extends State<AddBillScreen> {
             ],
           ),
         ),
-     ),
-);
-}
+      ),
+    );
+  }
 }
