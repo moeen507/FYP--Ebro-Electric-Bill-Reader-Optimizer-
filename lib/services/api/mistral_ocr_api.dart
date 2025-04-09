@@ -32,6 +32,7 @@ class MistralOcrApi {
             'type': 'image_url',
             'image_url': formattedBase64,
           },
+          "include_image_base64": true,
         },
       );
 

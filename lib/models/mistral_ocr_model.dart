@@ -34,10 +34,9 @@ class MistralOCRModel {
     for (var image in images) {
       final imageId = image.id;
       final imageBase64 = image.image_base64;
-      if (imageId != null && imageBase64 != null) {
-        markdownText = markdownText.replaceAll(
-            "![${imageId}](${imageId})", "![${imageId}](${imageBase64})");
-      }
+
+      markdownText = markdownText.replaceAll(
+          "![${imageId}](${imageId})", "![${imageId}](${imageBase64})");
     }
     return markdownText;
   }
@@ -120,7 +119,7 @@ class OCRImage {
       top_left_y: map['top_left_y'] as int,
       bottom_right_x: map['bottom_right_x'] as int,
       bottom_right_y: map['bottom_right_y'] as int,
-      image_base64: map['image_base64'] as String?,
+      image_base64: map['image_base64'],
     );
   }
 }
