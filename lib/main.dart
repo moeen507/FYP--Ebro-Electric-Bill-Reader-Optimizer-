@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'screens/welcome_screen.dart';
 
-void main() {
+void main() async {
+  // Load env file
+  await dotenv.load(fileName: ".env");
+
+  // Run your app
   runApp(ElectricBillApp());
 }
 

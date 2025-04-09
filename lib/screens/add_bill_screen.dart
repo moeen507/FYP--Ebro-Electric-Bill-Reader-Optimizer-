@@ -1,6 +1,9 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:markdown_widget/widget/markdown.dart';
+import '../models/mistral_ocr_model.dart';
+import '../services/api/mistral_ocr_api.dart';
 
 class AddBillScreen extends StatefulWidget {
   AddBillScreen({super.key});
@@ -14,6 +17,8 @@ class _AddBillScreenState extends State<AddBillScreen> {
   Uint8List? _imageData;
   String extractedText = "No text detected yet.";
   bool _isProcessing = false;
+  final MistralOcrApi _ocrApi = MistralOcrApi();
+  MistralOCRModel? _ocrResponse;
 
   Future<void> _showImagePicker(BuildContext context) async {
     showDialog(
@@ -70,19 +75,21 @@ class _AddBillScreenState extends State<AddBillScreen> {
   Future<void> _processImageForOCR(XFile imageFile) async {
     setState(() {
       _isProcessing = true;
+      extractedText = "Processing image...";
+      _ocrResponse = null;
     });
 
     try {
-      // This is where you would add OCR implementation
-      // For now it's just a placeholder
-      await Future.delayed(Duration(seconds: 2)); // Simulating processing time
+      // Use the API service to get structured response
+      final result = await _ocrApi.processImage(imageFile.path);
       setState(() {
-        extractedText = "Sample extracted text. OCR implementation needed.";
+        _ocrResponse = result;
+
+        extractedText = _ocrResponse!.toMarkdownString();
+
+        print(extractedText);
       });
     } catch (e) {
-      setState(() {
-        extractedText = "Error processing image: $e";
-      });
       print("Error during OCR process: $e");
     } finally {
       setState(() {
@@ -135,11 +142,8 @@ class _AddBillScreenState extends State<AddBillScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        extractedText,
-                        style: TextStyle(fontSize: 16),
-                        textAlign: TextAlign.center,
-                      ),
+                      child:
+                          MarkdownWidget(shrinkWrap: true, data: extractedText),
                     ),
                   ],
                 ),

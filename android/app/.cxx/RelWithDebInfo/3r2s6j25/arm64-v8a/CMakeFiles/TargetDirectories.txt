@@ -1,0 +1,2 @@
+/home/ranaadeeltahir/development/projects/FYP-/android/app/.cxx/RelWithDebInfo/3r2s6j25/arm64-v8a/CMakeFiles/edit_cache.dir
+/home/ranaadeeltahir/development/projects/FYP-/android/app/.cxx/RelWithDebInfo/3r2s6j25/arm64-v8a/CMakeFiles/rebuild_cache.dir
