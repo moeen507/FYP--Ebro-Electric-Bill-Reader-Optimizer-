@@ -23,7 +23,7 @@ class _ElectricBillAppState extends State<ElectricBillApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-    
+      title: "EBRO",
       debugShowCheckedModeBanner: false,
       theme: isDarkMode ? ThemeData.dark() : ThemeData.light(),
       home: WelcomePage(

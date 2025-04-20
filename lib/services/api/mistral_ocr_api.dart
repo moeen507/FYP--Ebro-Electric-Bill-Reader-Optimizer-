@@ -25,9 +25,6 @@ class MistralOcrApi {
       // Format base64 image with prefix to match Python implementation
       String formattedBase64 = "data:image/jpeg;base64,$base64Image";
 
-      print(
-          'Calling Mistral OCR API with key length: ${_mistralApiKey.length}');
-
       final response = await _dio.post(
         'https://api.mistral.ai/v1/ocr', // Corrected endpoint URL
         options: Options(
@@ -41,7 +38,8 @@ class MistralOcrApi {
           'document': {
             'type': 'image_url',
             'image_url': formattedBase64,
-          }
+          },
+          'include_image_base64': 'True'
         },
       );
 
