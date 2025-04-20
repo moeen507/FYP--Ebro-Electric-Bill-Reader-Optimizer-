@@ -62,8 +62,6 @@ class _AddBillScreenState extends State<AddBillScreen> {
           _imageData = imageBytes;
         });
         await _processImageForOCR(pickedFile);
-      } else {
-        print("No image selected");
       }
     } catch (e) {
       print("Error picking image: $e");

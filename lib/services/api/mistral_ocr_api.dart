@@ -6,7 +6,14 @@ import '../../models/mistral_ocr_model.dart';
 
 class MistralOcrApi {
   final Dio _dio = Dio();
-  final String _mistralApiKey = dotenv.env['MISTRAL_API_KEY'] ?? '';
+  late final String _mistralApiKey;
+
+  MistralOcrApi() {
+    _mistralApiKey = dotenv.env['MISTRAL_API_KEY'] ?? '';
+    if (_mistralApiKey.isEmpty) {
+      print('WARNING: MISTRAL_API_KEY is empty. Check your .env file.');
+    }
+  }
 
   Future<MistralOCRModel> processImage(String imagePath) async {
     try {
@@ -18,8 +25,11 @@ class MistralOcrApi {
       // Format base64 image with prefix to match Python implementation
       String formattedBase64 = "data:image/jpeg;base64,$base64Image";
 
+      print(
+          'Calling Mistral OCR API with key length: ${_mistralApiKey.length}');
+
       final response = await _dio.post(
-        'https://api.mistral.ai/v1/ocr',
+        'https://api.mistral.ai/v1/ocr', // Corrected endpoint URL
         options: Options(
           headers: {
             'Content-Type': 'application/json',
@@ -31,8 +41,7 @@ class MistralOcrApi {
           'document': {
             'type': 'image_url',
             'image_url': formattedBase64,
-          },
-          "include_image_base64": true,
+          }
         },
       );
 
@@ -42,41 +51,18 @@ class MistralOcrApi {
       } else {
         throw Exception('Failed to process OCR: ${response.statusCode}');
       }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        print('Authentication error: Your API key may be invalid or expired.');
+        print('Status code: ${e.response?.statusCode}');
+        print('Response: ${e.response?.data}');
+      } else {
+        print('Error calling Mistral OCR API: $e');
+      }
+      rethrow;
     } catch (e) {
-      print('Error calling Mistral OCR API: $e');
+      print('Unexpected error in Mistral OCR API: $e');
       rethrow;
     }
   }
 }
-
-/*
-{
-  "pages": [
-    {
-      "index": 1,
-      "markdown": "# Sample Document\n\nThis is a sample document to demonstrate",
-      "images": [
-        {
-          "id": "img-0.jpeg",
-          "top_left_x": 292,
-          "top_left_y": 217,
-          "bottom_right_x": 1405,
-          "bottom_right_y": 649,
-          "image_base64": "..."
-        }
-      ],
-      "dimensions": {
-        "dpi": 300,
-        "height": 1100,
-        "width": 850
-      }
-    }
-  ],
-  "model": "sample-ocr-model",
-  "usage_info": {
-    "pages_processed": 1,
-    "doc_size_bytes": 1024
-  }
-}
-
-*/
