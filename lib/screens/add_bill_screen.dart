@@ -1,9 +1,8 @@
 import 'dart:typed_data';
+import 'package:EBRO/models/electicity_bill_model.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:markdown_widget/widget/markdown.dart';
-import 'dart:convert';
-import '../models/mistral_ocr_model.dart';
+
 import '../services/api/mistral_ocr_api.dart';
 
 class AddBillScreen extends StatefulWidget {
@@ -19,7 +18,7 @@ class _AddBillScreenState extends State<AddBillScreen> {
   String extractedText = "No text detected yet.";
   bool _isProcessing = false;
   final MistralOcrApi _ocrApi = MistralOcrApi();
-  MistralOCRModel? _ocrResponse;
+  ElecticityBillModel? result;
 
   Future<void> _showImagePicker(BuildContext context) async {
     showDialog(
@@ -74,25 +73,29 @@ class _AddBillScreenState extends State<AddBillScreen> {
   Future<void> _processImageForOCR(XFile imageFile) async {
     setState(() {
       _isProcessing = true;
-      extractedText = "Processing image...";
-      _ocrResponse = null;
     });
 
-    try {
-      // Use the API service to get structured response
-      final result = await _ocrApi.processImage(imageFile.path);
-      setState(() {
-        _ocrResponse = result;
+    result = await _ocrApi.get_structured_content(imageFile.path);
 
-        extractedText = _ocrResponse!.toMarkdownString();
-      });
-    } catch (e) {
-      print("Error during OCR process: $e");
-    } finally {
-      setState(() {
-        _isProcessing = false;
-      });
-    }
+    setState(() {
+      _isProcessing = false;
+    });
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Text(value),
+        ],
+      ),
+    );
   }
 
   @override
@@ -146,6 +149,77 @@ class _AddBillScreenState extends State<AddBillScreen> {
               SizedBox(height: 20),
               if (_isProcessing)
                 CircularProgressIndicator()
+              else if (result != null)
+                Column(
+                  children: [
+                    Text(
+                      "Bill Information",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      margin: EdgeInsets.all(12),
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.black,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildInfoRow("Due Date", result!.due_date),
+                          _buildInfoRow("Current Bill",
+                              "Rs.${result!.current_bill.toStringAsFixed(2)}"),
+                          _buildInfoRow("Current Adjustment",
+                              "Rs.${result!.current_adjustment.toStringAsFixed(2)}"),
+                          SizedBox(height: 16),
+                          Text(
+                            "Past Records",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 8),
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: DataTable(
+                                border: TableBorder.all(
+                                  color: Colors.grey.shade300,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                columns: [
+                                  DataColumn(label: Text('Month')),
+                                  DataColumn(label: Text('Units')),
+                                  DataColumn(label: Text('Bill')),
+                                  DataColumn(label: Text('Adjustment')),
+                                  DataColumn(label: Text('Payment')),
+                                ],
+                                rows: result!.past_records.map((record) {
+                                  return DataRow(cells: [
+                                    DataCell(Text('${record.month}')),
+                                    DataCell(Text('${record.units}')),
+                                    DataCell(Text(
+                                        'Rs.${record.bill.toStringAsFixed(2)}')),
+                                    DataCell(Text(
+                                        'Rs.${record.adjustment?.toStringAsFixed(2) ?? '0.00'}')),
+                                    DataCell(Text(
+                                        'Rs.${record.payment.toStringAsFixed(2)}')),
+                                  ]);
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                )
               else
                 Column(
                   children: [
@@ -156,7 +230,10 @@ class _AddBillScreenState extends State<AddBillScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: _buildMarkdownWithImages(),
+                      child: Center(
+                        child: Text(
+                            'No bill information available. Please upload an image.'),
+                      ),
                     ),
                   ],
                 ),
@@ -165,104 +242,5 @@ class _AddBillScreenState extends State<AddBillScreen> {
         ),
       ),
     );
-  }
-
-  Widget _buildMarkdownWithImages() {
-    // If no OCR response yet, just show the basic text
-    if (_ocrResponse == null) {
-      return MarkdownWidget(shrinkWrap: true, data: extractedText);
-    }
-
-    // Regular expression to find base64 image patterns in markdown
-    final RegExp imgRegExp =
-        RegExp(r'!\[(.*?)\]\((data:image\/[^;]+;base64,[^)]+)\)');
-
-    // Find all image matches in the markdown
-    final matches = imgRegExp.allMatches(extractedText);
-
-    if (matches.isEmpty) {
-      // If no images, just return regular markdown
-      return MarkdownWidget(shrinkWrap: true, data: extractedText);
-    }
-
-    // Build a list of widgets combining text and images
-    List<Widget> contentWidgets = [];
-    int lastEnd = 0;
-
-    for (final match in matches) {
-      // Add text before the image
-      if (match.start > lastEnd) {
-        final textBefore = extractedText.substring(lastEnd, match.start);
-        contentWidgets.add(MarkdownWidget(shrinkWrap: true, data: textBefore));
-      }
-
-      // Extract image data
-      final imageBase64 = match.group(2)!;
-
-      // Add the image
-      contentWidgets.add(_buildBase64Image(imageBase64));
-
-      lastEnd = match.end;
-    }
-
-    // Add any remaining text after the last image
-    if (lastEnd < extractedText.length) {
-      final textAfter = extractedText.substring(lastEnd);
-      contentWidgets.add(MarkdownWidget(shrinkWrap: true, data: textAfter));
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: contentWidgets,
-    );
-  }
-
-  Widget _buildBase64Image(String base64String) {
-    try {
-      // Extract just the base64 part without the data:image prefix
-      final parts = base64String.split(',');
-      if (parts.length < 2) {
-        throw FormatException('Invalid base64 image format');
-      }
-
-      final base64Data = parts[1];
-      final imageBytes = base64Decode(base64Data);
-
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Container(
-          constraints: BoxConstraints(
-            maxHeight: 400, // Limit max height to prevent overly large images
-          ),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade300),
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: Image.memory(
-              imageBytes,
-              fit: BoxFit.contain,
-              width: double.infinity,
-              errorBuilder: (context, error, stackTrace) {
-                print("Image error: $error");
-                return Container(
-                  padding: EdgeInsets.all(8.0),
-                  color: Colors.grey.shade200,
-                  child: Text('Failed to load image: $error'),
-                );
-              },
-            ),
-          ),
-        ),
-      );
-    } catch (e) {
-      print("Base64 decoding error: $e");
-      return Container(
-        padding: EdgeInsets.all(8.0),
-        color: Colors.red.shade100,
-        child: Text('Invalid image data: $e'),
-      );
-    }
   }
 }
