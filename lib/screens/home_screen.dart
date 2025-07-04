@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -7,7 +8,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text('home'.tr()),
         backgroundColor: Colors.black,
       ),
       body: Center(
@@ -17,7 +18,7 @@ class HomeScreen extends StatelessWidget {
             Icon(Icons.bolt, size: 100, color: Colors.tealAccent),
             SizedBox(height: 20),
             Text(
-              'Welcome to Electric Bill Optimizer!',
+              'welcome_message'.tr(),
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
 import 'settings_screen.dart';
@@ -10,8 +11,11 @@ class MainNavigationPage extends StatefulWidget {
   final VoidCallback onThemeToggle;
   final bool isDarkMode;
 
-  const MainNavigationPage(
-      {super.key, required this.onThemeToggle, required this.isDarkMode});
+  const MainNavigationPage({
+    super.key,
+    required this.onThemeToggle,
+    required this.isDarkMode,
+  });
 
   @override
   _MainNavigationPageState createState() => _MainNavigationPageState();
@@ -28,15 +32,14 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize the screens list inside the build method
     final List<Widget> screens = [
       HomeScreen(),
       ProfileScreen(),
       SettingsScreen(
         onThemeToggle: (isDark) {
-          widget.onThemeToggle(); // Access widget here
+          widget.onThemeToggle();
         },
-        isDarkMode: widget.isDarkMode, // Access widget here
+        isDarkMode: widget.isDarkMode,
       ),
       AboutScreen(),
       AddBillScreen(),
@@ -53,26 +56,26 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         },
         selectedItemColor: Colors.tealAccent,
         unselectedItemColor: Colors.grey,
-        items: const <BottomNavigationBarItem>[
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: 'home'.tr(),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Profile',
+            label: 'profile'.tr(),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            label: 'Settings',
+            label: 'settings'.tr(),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.info),
-            label: 'About',
+            label: 'about'.tr(),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.receipt),
-            label: 'Add Bill',
+            label: 'add_bill'.tr(),
           ),
         ],
       ),

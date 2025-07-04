@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../widgets/login_form.dart';
 import '../widgets/user_profile.dart';
 import 'guest_mode_page.dart';
@@ -15,26 +16,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoggedIn
-        ? UserProfile(
-            onLogout: () {
-              setState(() {
-                isLoggedIn = false;
-              });
-            },
-          )
-        : LoginForm(
-            onLogin: () {
-              setState(() {
-                isLoggedIn = true;
-              });
-            },
-            onGuestMode: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => GuestModePage()),
-              );
-            },
-          );
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('profile'.tr()),
+        backgroundColor: Colors.black,
+      ),
+      body: isLoggedIn
+          ? UserProfile(
+              onLogout: () {
+                setState(() {
+                  isLoggedIn = false;
+                });
+              },
+            )
+          : LoginForm(
+              onLogin: () {
+                setState(() {
+                  isLoggedIn = true;
+                });
+              },
+              onGuestMode: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GuestModePage()),
+                );
+              },
+            ),
+    );
   }
 }

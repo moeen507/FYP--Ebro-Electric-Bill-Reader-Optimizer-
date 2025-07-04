@@ -1,9 +1,11 @@
-import 'dart:typed_data';
-import 'package:EBRO/models/electicity_bill_model.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+// ignore_for_file: deprecated_member_use
 
+import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'dart:typed_data';
+import 'package:image_picker/image_picker.dart';
 import '../services/api/mistral_ocr_api.dart';
+import 'package:EBRO/models/electicity_bill_model.dart';
 
 class AddBillScreen extends StatefulWidget {
   AddBillScreen({super.key});
@@ -15,7 +17,7 @@ class AddBillScreen extends StatefulWidget {
 class _AddBillScreenState extends State<AddBillScreen> {
   final ImagePicker _picker = ImagePicker();
   Uint8List? _imageData;
-  String extractedText = "No text detected yet.";
+  String extractedText = "no_text_detected".tr();
   bool _isProcessing = false;
   final MistralOcrApi _ocrApi = MistralOcrApi();
   ElecticityBillModel? result;
@@ -25,13 +27,13 @@ class _AddBillScreenState extends State<AddBillScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Choose an Option'),
+          title: Text('choose_option'.tr()),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
                 leading: Icon(Icons.photo_library),
-                title: Text('Gallery Picker'),
+                title: Text('gallery_picker'.tr()),
                 onTap: () async {
                   Navigator.pop(context);
                   await _pickImage(ImageSource.gallery);
@@ -39,7 +41,7 @@ class _AddBillScreenState extends State<AddBillScreen> {
               ),
               ListTile(
                 leading: Icon(Icons.camera_alt),
-                title: Text('Use Camera'),
+                title: Text('use_camera'.tr()),
                 onTap: () async {
                   Navigator.pop(context);
                   await _pickImage(ImageSource.camera);
@@ -65,7 +67,7 @@ class _AddBillScreenState extends State<AddBillScreen> {
     } catch (e) {
       print("Error picking image: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to pick image: $e")),
+        SnackBar(content: Text("failed_to_pick_image".tr(args: ["$e"]))),
       );
     }
   }
@@ -102,7 +104,7 @@ class _AddBillScreenState extends State<AddBillScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Bill with OCR'),
+        title: Text('add_bill_with_ocr'.tr()),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -138,13 +140,13 @@ class _AddBillScreenState extends State<AddBillScreen> {
                 )
               else
                 Text(
-                  'No image selected',
+                  'no_image_selected'.tr(),
                   style: TextStyle(fontSize: 16),
                 ),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => _showImagePicker(context),
-                child: Text('Upload Bill Image'),
+                child: Text('upload_bill_image'.tr()),
               ),
               SizedBox(height: 20),
               if (_isProcessing)
@@ -153,7 +155,7 @@ class _AddBillScreenState extends State<AddBillScreen> {
                 Column(
                   children: [
                     Text(
-                      "Bill Information",
+                      "bill_information".tr(),
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
@@ -169,14 +171,14 @@ class _AddBillScreenState extends State<AddBillScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildInfoRow("Due Date", result!.due_date),
-                          _buildInfoRow("Current Bill",
+                          _buildInfoRow("due_date".tr(), result!.due_date),
+                          _buildInfoRow("current_bill".tr(),
                               "Rs.${result!.current_bill.toStringAsFixed(2)}"),
-                          _buildInfoRow("Current Adjustment",
+                          _buildInfoRow("current_adjustment".tr(),
                               "Rs.${result!.current_adjustment.toStringAsFixed(2)}"),
                           SizedBox(height: 16),
                           Text(
-                            "Past Records",
+                            "past_records".tr(),
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -194,11 +196,11 @@ class _AddBillScreenState extends State<AddBillScreen> {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 columns: [
-                                  DataColumn(label: Text('Month')),
-                                  DataColumn(label: Text('Units')),
-                                  DataColumn(label: Text('Bill')),
-                                  DataColumn(label: Text('Adjustment')),
-                                  DataColumn(label: Text('Payment')),
+                                  DataColumn(label: Text('month'.tr())),
+                                  DataColumn(label: Text('units'.tr())),
+                                  DataColumn(label: Text('bill'.tr())),
+                                  DataColumn(label: Text('adjustment'.tr())),
+                                  DataColumn(label: Text('payment'.tr())),
                                 ],
                                 rows: result!.past_records.map((record) {
                                   return DataRow(cells: [
@@ -224,15 +226,14 @@ class _AddBillScreenState extends State<AddBillScreen> {
                 Column(
                   children: [
                     Text(
-                      "Extracted Text:",
+                      "extracted_text".tr(),
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Center(
-                        child: Text(
-                            'No bill information available. Please upload an image.'),
+                        child: Text('no_bill_info'.tr()),
                       ),
                     ),
                   ],

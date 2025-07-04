@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class UserProfile extends StatelessWidget {
   final VoidCallback onLogout;
@@ -17,13 +18,13 @@ class UserProfile extends StatelessWidget {
           ),
           SizedBox(height: 20),
           Text(
-            'Welcome, User!',
+            'welcome_user'.tr(),
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 20),
           ElevatedButton(
             onPressed: onLogout,
-            child: Text('Logout'),
+            child: Text('logout'.tr()),
           ),
         ],
       ),

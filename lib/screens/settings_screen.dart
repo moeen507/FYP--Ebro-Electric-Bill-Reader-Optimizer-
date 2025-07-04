@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class SettingsScreen extends StatefulWidget {
   final Function(bool) onThemeToggle;
   final bool isDarkMode;
 
-  const SettingsScreen(
-      {super.key, required this.onThemeToggle, required this.isDarkMode});
+  const SettingsScreen({
+    super.key,
+    required this.onThemeToggle,
+    required this.isDarkMode,
+  });
 
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
@@ -13,6 +17,16 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool isDarkModeState;
+  final Map<String, Locale> languageLocales = {
+    'English': Locale('en'),
+    'Urdu': Locale('ur'),
+    'Arabic': Locale('ar'),
+  };
+
+  String get selectedLanguage => languageLocales.entries
+      .firstWhere((entry) => entry.value == context.locale,
+          orElse: () => languageLocales.entries.first)
+      .key;
 
   _SettingsScreenState() : isDarkModeState = false;
 
@@ -22,18 +36,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
     isDarkModeState = widget.isDarkMode;
   }
 
+  void _showLanguageDialog() async {
+    String? language = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: Text('select_language'.tr()),
+          children: languageLocales.keys.map((lang) {
+            return SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, lang);
+              },
+              child: Text(lang),
+            );
+          }).toList(),
+        );
+      },
+    );
+    if (language != null && languageLocales[language] != context.locale) {
+      context.setLocale(languageLocales[language]!);
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: Text('settings'.tr()),
         backgroundColor: Colors.black,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           SwitchListTile(
-            title: Text('Dark Mode'),
+            title: Text('dark_mode'.tr()),
             value: isDarkModeState,
             onChanged: (value) {
               setState(() {
@@ -44,35 +81,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           ListTile(
             leading: Icon(Icons.language, color: Colors.tealAccent),
-            title: Text('Language'),
-            subtitle: Text('Select app language'),
-            onTap: () {
-              // Add language selection logic
-            },
+            title: Text('language'.tr()),
+            subtitle: Text('Current: $selectedLanguage'),
+            onTap: _showLanguageDialog,
           ),
           ListTile(
             leading: Icon(Icons.notifications, color: Colors.tealAccent),
-            title: Text('Notifications'),
-            subtitle: Text('Manage app notifications'),
-            onTap: () {
-              // Add notification settings logic
-            },
+            title: Text('notifications'.tr()),
+            subtitle: Text('manage_notifications'.tr()),
+            onTap: () {},
           ),
           ListTile(
             leading: Icon(Icons.privacy_tip, color: Colors.tealAccent),
-            title: Text('Privacy Policy'),
-            subtitle: Text('View our privacy policy'),
-            onTap: () {
-              // Navigate to privacy policy page
-            },
+            title: Text('privacy_policy'.tr()),
+            subtitle: Text('view_privacy_policy'.tr()),
+            onTap: () {},
           ),
           ListTile(
             leading: Icon(Icons.help, color: Colors.tealAccent),
-            title: Text('Help & Support'),
-            subtitle: Text('Get help or contact support'),
-            onTap: () {
-              // Navigate to help & support page
-            },
+            title: Text('help_support'.tr()),
+            subtitle: Text('get_help'.tr()),
+            onTap: () {},
           ),
         ],
       ),

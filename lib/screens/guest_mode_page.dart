@@ -1,23 +1,26 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class GuestModePage extends StatelessWidget {
   final List<Map<String, dynamic>> appliances = [
-    {'name': 'Refrigerator', 'icon': Icons.kitchen},
-    {'name': 'Air Conditioner', 'icon': Icons.ac_unit},
-    {'name': 'Washing Machine', 'icon': Icons.local_laundry_service},
-    {'name': 'Television', 'icon': Icons.tv},
-    {'name': 'Oven', 'icon': Icons.microwave},
-    {'name': 'Fan', 'icon': Icons.toys},
-    {'name': 'Heater', 'icon': Icons.whatshot},
-    {'name': 'Light Bulb', 'icon': Icons.lightbulb},
-    {'name': 'Vacuum Cleaner', 'icon': Icons.cleaning_services},
-    {'name': 'Coffee Maker', 'icon': Icons.coffee},
-    {'name': 'Toaster', 'icon': Icons.bakery_dining},
-    {'name': 'Iron', 'icon': Icons.iron},
-    {'name': 'Water Heater', 'icon': Icons.water},
+    {'name': 'refrigerator', 'icon': Icons.kitchen},
+    {'name': 'air_conditioner', 'icon': Icons.ac_unit},
+    {'name': 'washing_machine', 'icon': Icons.local_laundry_service},
+    {'name': 'television', 'icon': Icons.tv},
+    {'name': 'oven', 'icon': Icons.microwave},
+    {'name': 'fan', 'icon': Icons.toys},
+    {'name': 'heater', 'icon': Icons.whatshot},
+    {'name': 'light_bulb', 'icon': Icons.lightbulb},
+    {'name': 'vacuum_cleaner', 'icon': Icons.cleaning_services},
+    {'name': 'coffee_maker', 'icon': Icons.coffee},
+    {'name': 'toaster', 'icon': Icons.bakery_dining},
+    {'name': 'iron', 'icon': Icons.iron},
+    {'name': 'water_heater', 'icon': Icons.water},
   ];
 
-  void _showQuantityPopup(BuildContext context, String applianceName) {
+  void _showQuantityPopup(BuildContext context, String applianceKey) {
     int quantity = 0;
 
     showDialog(
@@ -28,7 +31,7 @@ class GuestModePage extends StatelessWidget {
             return AlertDialog(
               backgroundColor: Colors.black,
               title: Text(
-                'Set Quantity',
+                'set_quantity'.tr(),
                 style: TextStyle(color: Colors.tealAccent),
               ),
               content: Row(
@@ -61,18 +64,25 @@ class GuestModePage extends StatelessWidget {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+                  child:
+                      Text('cancel'.tr(), style: TextStyle(color: Colors.grey)),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                          content:
-                              Text('You selected $quantity of $applianceName')),
+                        content: Text(
+                          'selected_quantity'.tr(namedArgs: {
+                            'quantity': '$quantity',
+                            'appliance': applianceKey.tr()
+                          }),
+                        ),
+                      ),
                     );
                   },
-                  child: Text('OK', style: TextStyle(color: Colors.tealAccent)),
+                  child: Text('ok'.tr(),
+                      style: TextStyle(color: Colors.tealAccent)),
                 ),
               ],
             );
@@ -86,7 +96,7 @@ class GuestModePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Select Appliances'),
+        title: Text('select_appliances'.tr()),
         backgroundColor: Colors.black,
       ),
       body: Padding(
@@ -104,7 +114,8 @@ class GuestModePage extends StatelessWidget {
               color: Colors.tealAccent.withOpacity(0.1),
               child: InkWell(
                 onTap: () {
-                  _showQuantityPopup(context, appliances[index]['name']);
+                  _showQuantityPopup(
+                      context, appliances[index]['name'] as String);
                 },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -113,7 +124,7 @@ class GuestModePage extends StatelessWidget {
                         size: 24, color: Colors.tealAccent),
                     SizedBox(height: 4),
                     Text(
-                      appliances[index]['name'],
+                      (appliances[index]['name'] as String).tr(),
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

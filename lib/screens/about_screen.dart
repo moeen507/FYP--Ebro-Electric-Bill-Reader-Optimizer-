@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -7,7 +8,7 @@ class AboutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('About'),
+        title: Text('about'.tr()),
         backgroundColor: Colors.black,
       ),
       body: Padding(
@@ -15,7 +16,7 @@ class AboutScreen extends StatelessWidget {
         child: ListView(
           children: [
             Text(
-              'About Electric Bill Optimizer',
+              'about_title'.tr(),
               style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -23,51 +24,43 @@ class AboutScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              'This app helps you track and optimize your electricity usage. Discover energy-saving tips and manage your appliances efficiently.',
+              'about_description'.tr(),
               style: TextStyle(fontSize: 16, color: Colors.white),
             ),
             SizedBox(height: 20),
             Text(
-              'Features:',
+              'features'.tr(),
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.tealAccent),
             ),
             Text(
-              '- Electricity usage tracking\n'
-              '- Energy-saving tips\n'
-              '- Appliance management\n'
-              '- Cost breakdown for each appliance\n'
-              '- Customizable notifications',
+              'features_list'.tr(),
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             SizedBox(height: 20),
             Text(
-              'Developers:',
+              'developers'.tr(),
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.tealAccent),
             ),
             Text(
-              '1. Moeen Ahmed Butt\n'
-              '2. Ahmad Waleed\n'
-              '3. Muhammad Aman\n'
-              '4. Muhammad Waqar Younas\n'
-              '5. Umar Suhail',
+              'developers_list'.tr(),
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             SizedBox(height: 20),
             Text(
-              'Contact Us:',
+              'contact_us'.tr(),
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.tealAccent),
             ),
             Text(
-              'Phone: 03149104427\nEmail: f2021266469@umt.edu.pk',
+              'contact_info'.tr(),
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
           ],

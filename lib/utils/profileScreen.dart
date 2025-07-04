@@ -1,6 +1,7 @@
 // ignore_for_file: camel_case_types, file_names
 
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class profileScr extends StatefulWidget {
   const profileScr({super.key});
@@ -12,34 +13,35 @@ class profileScr extends StatefulWidget {
 class _profileScrState extends State<profileScr> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold
-    (
+    return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Profile Screen"),
+            Text("profile_screen".tr()),
             SizedBox(
               height: 500,
               width: 300,
-              //color: Colors.blue,
               child: Column(
                 children: [
-                  Icon(Icons.person,size: 50,),
-                  SizedBox(height: 10,),
+                  Icon(Icons.person, size: 50),
+                  SizedBox(height: 10),
                   TextField(
                     decoration: InputDecoration(
-                      hintText: "UserName"
+                      hintText: "username".tr(),
                     ),
                   ),
-                  SizedBox(height: 10,),
+                  SizedBox(height: 10),
                   TextField(
                     decoration: InputDecoration(
-                      hintText: "Email"
+                      hintText: "email".tr(),
                     ),
                   ),
-                  SizedBox(height: 10,),
-                  ElevatedButton(onPressed: (){}, child: Text("Logout"))
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: Text("logout".tr()),
+                  )
                 ],
               ),
             )

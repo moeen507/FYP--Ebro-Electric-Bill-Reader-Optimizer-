@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class LoginForm extends StatelessWidget {
   final VoidCallback onLogin;
   final VoidCallback onGuestMode;
 
-  const LoginForm(
-      {super.key, required this.onLogin, required this.onGuestMode});
+  const LoginForm({
+    super.key,
+    required this.onLogin,
+    required this.onGuestMode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +21,7 @@ class LoginForm extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Welcome Back!',
+                'welcome_back'.tr(),
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -27,7 +31,7 @@ class LoginForm extends StatelessWidget {
               SizedBox(height: 10),
               TextField(
                 decoration: InputDecoration(
-                  labelText: 'Email or Username',
+                  labelText: 'email_or_username'.tr(),
                   labelStyle: TextStyle(color: Colors.grey),
                   prefixIcon: Icon(Icons.email, color: Colors.tealAccent),
                   border: OutlineInputBorder(
@@ -43,7 +47,7 @@ class LoginForm extends StatelessWidget {
               TextField(
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  labelText: 'password'.tr(),
                   labelStyle: TextStyle(color: Colors.grey),
                   prefixIcon: Icon(Icons.lock, color: Colors.tealAccent),
                   border: OutlineInputBorder(
@@ -66,7 +70,7 @@ class LoginForm extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 ),
                 child: Text(
-                  'Login',
+                  'login'.tr(),
                   style: TextStyle(fontSize: 18, color: Colors.black),
                 ),
               ),
@@ -74,7 +78,7 @@ class LoginForm extends StatelessWidget {
               TextButton(
                 onPressed: onGuestMode,
                 child: Text(
-                  'Continue as Guest',
+                  'continue_as_guest'.tr(),
                   style: TextStyle(color: Colors.tealAccent, fontSize: 16),
                 ),
               ),

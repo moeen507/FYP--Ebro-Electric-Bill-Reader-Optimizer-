@@ -1,13 +1,23 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'screens/welcome_screen.dart';
 
 void main() async {
-  // Load env file
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  await EasyLocalization.ensureInitialized();
 
-  // Run your app
-  runApp(ElectricBillApp());
+  runApp(
+    EasyLocalization(
+      supportedLocales: [Locale('en'), Locale('ur'), Locale('ar')],
+      path: 'assets/lang',
+      fallbackLocale: Locale('en'),
+      child: ElectricBillApp(),
+    ),
+  );
 }
 
 class ElectricBillApp extends StatefulWidget {
@@ -26,6 +36,9 @@ class _ElectricBillAppState extends State<ElectricBillApp> {
       title: "EBRO",
       debugShowCheckedModeBanner: false,
       theme: isDarkMode ? ThemeData.dark() : ThemeData.light(),
+      localizationsDelegates: context.localizationDelegates, // <-- FIXED HERE
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       home: WelcomePage(
         onThemeToggle: () {
           setState(() {
